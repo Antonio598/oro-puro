@@ -144,6 +144,15 @@ function GoldDrip() {
   );
 }
 
+function FadeSection({ children, className = "", style = {} }) {
+  const [ref, visible] = useInView(0.1);
+  return (
+    <div ref={ref} className={`fade-section ${visible ? "visible" : ""} ${className}`} style={style}>
+      {children}
+    </div>
+  );
+}
+
 export default function OroPuro() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
@@ -424,15 +433,6 @@ export default function OroPuro() {
       100% { transform: translateY(100vh); opacity: 0; }
     }
   `;
-
-  function FadeSection({ children, className = "", style = {} }) {
-    const [ref, visible] = useInView(0.1);
-    return (
-      <div ref={ref} className={`fade-section ${visible ? "visible" : ""} ${className}`} style={style}>
-        {children}
-      </div>
-    );
-  }
 
   return (
     <>
