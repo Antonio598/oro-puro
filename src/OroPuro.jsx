@@ -1277,7 +1277,7 @@ export default function OroPuro() {
 
       {/* NAV */}
       <nav className="oro-nav">
-        <div className="oro-logo" onClick={() => scrollTo("hero")}>ORO <span>PURO</span></div>
+        <div className="oro-logo" onClick={() => scrollTo("hero")}>DOR<span>EÉ</span></div>
         <ul className="nav-links">
           <li><a onClick={() => scrollTo("productos")}>Colección</a></li>
           <li><a onClick={() => scrollTo("proceso")}>Origen</a></li>
