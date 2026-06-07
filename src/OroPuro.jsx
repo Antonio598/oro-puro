@@ -284,20 +284,22 @@ function HeroParticles() {
     resize();
     window.addEventListener("resize", resize);
 
+    const isMobile = window.innerWidth < 768;
+
     // Pollen — amber, upward drift
-    for (let i = 0; i < 35; i++) {
+    for (let i = 0; i < (isMobile ? 18 : 35); i++) {
       particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 2 + 1, dx: (Math.random() - 0.5) * 0.3, dy: -(Math.random() * 0.3 + 0.1), o: Math.random() * 0.5 + 0.3, type: "pollen", phase: Math.random() * Math.PI * 2, phaseSpeed: Math.random() * 0.015 + 0.005 });
     }
     // Dust motes — cream, orbital
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < (isMobile ? 4 : 10); i++) {
       particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 2.5 + 2, dx: (Math.random() - 0.5) * 0.06, dy: (Math.random() - 0.5) * 0.06, o: Math.random() * 0.15 + 0.08, type: "dust", angle: Math.random() * Math.PI * 2, angleSpeed: (Math.random() - 0.5) * 0.005 });
     }
     // Forest spores — green, more visible
-    for (let i = 0; i < 22; i++) {
+    for (let i = 0; i < (isMobile ? 12 : 22); i++) {
       particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 3 + 1.5, dx: (Math.random() - 0.5) * 0.2, dy: -(Math.random() * 0.2 + 0.08), o: Math.random() * 0.45 + 0.25, type: "spore", phase: Math.random() * Math.PI * 2, phaseSpeed: Math.random() * 0.01 + 0.004 });
     }
     // Large leaf particles — bright green, slow
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < (isMobile ? 4 : 8); i++) {
       particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 4 + 4, dx: (Math.random() - 0.5) * 0.12, dy: -(Math.random() * 0.12 + 0.04), o: Math.random() * 0.35 + 0.2, type: "leaf", angle: Math.random() * Math.PI * 2, angleSpeed: (Math.random() - 0.5) * 0.008, phase: Math.random() * Math.PI * 2, phaseSpeed: Math.random() * 0.007 + 0.003 });
     }
 
@@ -430,7 +432,7 @@ function SocialToast() {
   }, []);
 
   return (
-    <div style={{
+    <div className="social-toast-mobile" style={{
       position: "fixed", bottom: "1.5rem", left: "1.5rem", zIndex: 1500,
       background: "rgba(26,18,10,0.95)", border: "1px solid rgba(200,132,26,0.35)",
       backdropFilter: "blur(12px)", padding: "0.85rem 1.2rem",
@@ -460,6 +462,7 @@ function FloatingCTA({ showCart, onScroll }) {
   return (
     <button
       onClick={onScroll}
+      className="floating-cta-mobile"
       style={{
         position: "fixed", bottom: "1.5rem", right: "1.5rem", zIndex: 1500,
         background: "var(--amber)", color: "var(--bark)",
@@ -502,7 +505,7 @@ function ProcessSection() {
           background: "linear-gradient(90deg, transparent, rgba(200,132,26,0.4), rgba(200,132,26,0.4), transparent)",
           display: "none",
         }} className="process-line" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem" }}>
+        <div className="process-grid-mobile" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem" }}>
           {PROCESS_STEPS.map((step, i) => (
             <FadeSection key={step.title} delay={i * 0.12}>
               <div style={{ textAlign: "center", padding: "1.5rem 1rem" }}>
@@ -1131,15 +1134,89 @@ export default function OroPuro() {
     .burger { display: none; background: none; border: none; color: var(--amber); font-size: 1.5rem; cursor: pointer; }
 
     @media (max-width: 768px) {
+      /* NAV */
       .nav-links { display: none; }
       .burger { display: block; }
-      .hero-content { padding: 1rem; }
-      .section { padding: 4rem 1.2rem; }
-      .stats-row { gap: 0; }
+
+      /* HERO */
+      .hero-content { padding: 1.2rem 1rem; }
+      .hero-eyebrow { font-size: 0.58rem; letter-spacing: 4px; margin-bottom: 1rem; }
+      .hero-title { font-size: clamp(2.8rem, 14vw, 4.5rem); gap: 0 0.1em !important; }
+      .hero-subtitle { font-size: 1rem; margin-bottom: 2rem; }
+      .hero-cta { padding: 16px 36px; font-size: 0.72rem; letter-spacing: 3px; }
+      .hero-scroll-cue { bottom: 1.2rem; }
+
+      /* SECTIONS */
+      .section { padding: 3.5rem 1.2rem; }
+      .section-title { font-size: clamp(1.7rem, 7vw, 2.4rem); }
+      .section-subtitle { font-size: 0.72rem; letter-spacing: 1.5px; margin-bottom: 2.5rem; }
+
+      /* STATS — 2x2 grid */
+      .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+      .stat { padding: 1.2rem 0.8rem; }
       .stat:not(:last-child)::after { display: none; }
-      .products-grid { grid-template-columns: 1fr; }
+      .stat-number { font-size: 2.2rem; }
+      .stat-label { font-size: 0.6rem; }
+
+      /* PRODUCTS */
+      .products-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .product-card { padding: 2rem 1.4rem; }
+
+      /* BENEFITS */
+      .benefits-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .benefit-card { padding: 1.5rem 1rem; }
+      .benefit-icon { font-size: 2rem; }
+      .benefit-title { font-size: 0.95rem; }
+      .benefit-text { font-size: 0.78rem; }
+
+      /* TESTIMONIALS */
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .testimonial { padding: 1.5rem; }
+
+      /* GUARANTEE */
+      .guarantee-box { padding: 2rem 1.4rem; }
       .guarantee-points { flex-direction: column; align-items: center; gap: 1rem; }
+
+      /* FOOTER */
       .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-newsletter { flex-direction: column; }
+      .footer-email-input { width: 100%; }
+      .footer-email-btn { width: 100%; padding: 12px; }
+
+      /* CART */
+      .cart-panel { width: 100vw; max-width: 100vw; }
+
+      /* SOCIAL TOAST */
+      .social-toast-mobile { left: 0.8rem !important; right: 0.8rem !important; max-width: calc(100vw - 1.6rem) !important; }
+
+      /* FLOATING CTA */
+      .floating-cta-mobile { bottom: 1rem !important; right: 1rem !important; padding: 12px 20px !important; font-size: 0.68rem !important; }
+
+      /* FADE — less intense on mobile */
+      .fade-section { transform: translateY(40px) scale(0.98); }
+
+      /* PROCESS */
+      .process-grid-mobile { grid-template-columns: 1fr 1fr !important; }
+    }
+
+    @media (max-width: 480px) {
+      .benefits-grid { grid-template-columns: 1fr; }
+      .process-grid-mobile { grid-template-columns: 1fr !important; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .hero-title { font-size: clamp(2.4rem, 16vw, 3.5rem); }
+    }
+
+    /* Disable 3D tilt hover on touch devices */
+    @media (hover: none) {
+      .product-card { transform: none !important; }
+      .benefit-card:hover { transform: translateY(-4px) scale(1) !important; }
+    }
+
+    /* Respect reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .fade-section { transition: opacity 0.4s ease !important; transform: none !important; }
+      .fade-section.visible { transform: none !important; }
+      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
     }
 
     @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
@@ -1332,34 +1409,44 @@ export default function OroPuro() {
           </button>
         </div>
 
-        {/* Amber drips */}
-        {[0,1,2,3,4,5,6,7].map((i) => (
-          <div key={`a${i}`} style={{
-            position: "absolute",
-            width: 18 + (i % 3) * 6, height: 26 + (i % 3) * 8,
-            borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
-            background: `linear-gradient(180deg, ${i % 2 === 0 ? "#F2C96E" : "#E8A832"}, #7A4E10)`,
-            left: `${5 + i * 12}%`, top: -30,
-            animation: `drip ${8 + i * 1.1}s ${i * 1.6}s infinite cubic-bezier(0.2,0,0.8,1)`,
-            opacity: 0.85,
-            filter: "drop-shadow(0 0 8px rgba(200,132,26,0.55))",
-            zIndex: 1,
-          }} />
-        ))}
-        {/* Green / forest drips */}
-        {[0,1,2,3,4].map((i) => (
-          <div key={`g${i}`} style={{
-            position: "absolute",
-            width: 14 + i * 4, height: 20 + i * 5,
-            borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
-            background: `linear-gradient(180deg, #8FAF7E, #2D3F28)`,
-            left: `${10 + i * 18}%`, top: -30,
-            animation: `drip ${10 + i * 1.3}s ${3 + i * 2}s infinite cubic-bezier(0.2,0,0.8,1)`,
-            opacity: 0.7,
-            filter: "drop-shadow(0 0 6px rgba(90,140,74,0.45))",
-            zIndex: 1,
-          }} />
-        ))}
+        {/* Amber drips — fewer on mobile */}
+        {[0,1,2,3,4,5,6,7].map((i) => {
+          const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+          if (isMobile && i > 4) return null;
+          return (
+            <div key={`a${i}`} style={{
+              position: "absolute",
+              width: isMobile ? 12 + (i % 3) * 4 : 18 + (i % 3) * 6,
+              height: isMobile ? 18 + (i % 3) * 5 : 26 + (i % 3) * 8,
+              borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
+              background: `linear-gradient(180deg, ${i % 2 === 0 ? "#F2C96E" : "#E8A832"}, #7A4E10)`,
+              left: `${5 + i * 12}%`, top: -30,
+              animation: `drip ${8 + i * 1.1}s ${i * 1.6}s infinite cubic-bezier(0.2,0,0.8,1)`,
+              opacity: 0.85,
+              filter: "drop-shadow(0 0 8px rgba(200,132,26,0.55))",
+              zIndex: 1,
+            }} />
+          );
+        })}
+        {/* Green / forest drips — fewer on mobile */}
+        {[0,1,2,3,4].map((i) => {
+          const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+          if (isMobile && i > 2) return null;
+          return (
+            <div key={`g${i}`} style={{
+              position: "absolute",
+              width: isMobile ? 10 + i * 3 : 14 + i * 4,
+              height: isMobile ? 14 + i * 4 : 20 + i * 5,
+              borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
+              background: `linear-gradient(180deg, #8FAF7E, #2D3F28)`,
+              left: `${10 + i * 18}%`, top: -30,
+              animation: `drip ${10 + i * 1.3}s ${3 + i * 2}s infinite cubic-bezier(0.2,0,0.8,1)`,
+              opacity: 0.7,
+              filter: "drop-shadow(0 0 6px rgba(90,140,74,0.45))",
+              zIndex: 1,
+            }} />
+          );
+        })}
 
         <div className="hero-scroll-cue">
           <span>Scroll</span>
