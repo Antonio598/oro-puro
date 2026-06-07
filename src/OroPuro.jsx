@@ -145,6 +145,7 @@ function useInView(threshold = 0.12) {
 
 function AnimatedCounter({ end, duration = 2000, suffix = "", prefix = "" }) {
   const [count, setCount] = useState(0);
+  const [done, setDone] = useState(false);
   const [ref, visible] = useInView();
   useEffect(() => {
     if (!visible) return;
@@ -152,12 +153,19 @@ function AnimatedCounter({ end, duration = 2000, suffix = "", prefix = "" }) {
     const step = end / (duration / 16);
     const timer = setInterval(() => {
       start += step;
-      if (start >= end) { setCount(end); clearInterval(timer); }
-      else setCount(Math.floor(start));
+      if (start >= end) {
+        setCount(end);
+        setDone(true);
+        clearInterval(timer);
+      } else setCount(Math.floor(start));
     }, 16);
     return () => clearInterval(timer);
   }, [visible, end, duration]);
-  return <span ref={ref}>{prefix}{count.toLocaleString()}{suffix}</span>;
+  return (
+    <span ref={ref} style={done ? { display: "inline-block", animation: "counterBounce 0.6s ease-out forwards" } : {}}>
+      {prefix}{count.toLocaleString()}{suffix}
+    </span>
+  );
 }
 
 // ─── SVG COMPONENTS ──────────────────────────────────────────────────────────
@@ -276,35 +284,73 @@ function HeroParticles() {
     resize();
     window.addEventListener("resize", resize);
 
+    // Pollen — amber, upward drift
     for (let i = 0; i < 35; i++) {
-      particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 1.4 + 0.8, dx: (Math.random() - 0.5) * 0.25, dy: -(Math.random() * 0.25 + 0.15), o: Math.random() * 0.4 + 0.3, type: "pollen", phase: Math.random() * Math.PI * 2, phaseSpeed: Math.random() * 0.015 + 0.005 });
+      particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 2 + 1, dx: (Math.random() - 0.5) * 0.3, dy: -(Math.random() * 0.3 + 0.1), o: Math.random() * 0.5 + 0.3, type: "pollen", phase: Math.random() * Math.PI * 2, phaseSpeed: Math.random() * 0.015 + 0.005 });
     }
-    for (let i = 0; i < 12; i++) {
-      particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 2 + 2, dx: (Math.random() - 0.5) * 0.08, dy: (Math.random() - 0.5) * 0.08, o: Math.random() * 0.1 + 0.06, type: "dust", angle: Math.random() * Math.PI * 2, angleSpeed: (Math.random() - 0.5) * 0.006 });
+    // Dust motes — cream, orbital
+    for (let i = 0; i < 10; i++) {
+      particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 2.5 + 2, dx: (Math.random() - 0.5) * 0.06, dy: (Math.random() - 0.5) * 0.06, o: Math.random() * 0.15 + 0.08, type: "dust", angle: Math.random() * Math.PI * 2, angleSpeed: (Math.random() - 0.5) * 0.005 });
+    }
+    // Forest spores — green, more visible
+    for (let i = 0; i < 22; i++) {
+      particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 3 + 1.5, dx: (Math.random() - 0.5) * 0.2, dy: -(Math.random() * 0.2 + 0.08), o: Math.random() * 0.45 + 0.25, type: "spore", phase: Math.random() * Math.PI * 2, phaseSpeed: Math.random() * 0.01 + 0.004 });
+    }
+    // Large leaf particles — bright green, slow
+    for (let i = 0; i < 8; i++) {
+      particles.push({ x: Math.random() * 2000, y: Math.random() * 1000, r: Math.random() * 4 + 4, dx: (Math.random() - 0.5) * 0.12, dy: -(Math.random() * 0.12 + 0.04), o: Math.random() * 0.35 + 0.2, type: "leaf", angle: Math.random() * Math.PI * 2, angleSpeed: (Math.random() - 0.5) * 0.008, phase: Math.random() * Math.PI * 2, phaseSpeed: Math.random() * 0.007 + 0.003 });
     }
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.type === "dust" ? `rgba(240,222,180,${p.o})` : `rgba(200,132,26,${p.o})`;
-        ctx.fill();
-        if (p.type === "pollen") {
+        if (p.type === "leaf") {
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+          ctx.scale(1, 0.5);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, p.r, p.r * 0.6, 0, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(90,140,74,${p.o})`;
+          ctx.fill();
+          ctx.restore();
+          p.angle += p.angleSpeed;
           p.phase += p.phaseSpeed;
-          p.x += p.dx + Math.sin(p.phase) * 0.4;
+          p.x += p.dx + Math.sin(p.phase) * 0.3;
+          p.y += p.dy;
+          if (p.y < -20) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
+        } else if (p.type === "spore") {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(74,103,65,${p.o})`;
+          ctx.fill();
+          p.phase += p.phaseSpeed;
+          p.x += p.dx + Math.sin(p.phase) * 0.35;
           p.y += p.dy;
           if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
           if (p.x < -10) p.x = canvas.width + 10;
           if (p.x > canvas.width + 10) p.x = -10;
         } else {
-          p.angle += p.angleSpeed;
-          p.x += Math.cos(p.angle) * 0.2 + p.dx;
-          p.y += Math.sin(p.angle) * 0.15 + p.dy;
-          if (p.x < -20) p.x = canvas.width + 20;
-          if (p.x > canvas.width + 20) p.x = -20;
-          if (p.y < -20) p.y = canvas.height + 20;
-          if (p.y > canvas.height + 20) p.y = -20;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.type === "dust" ? `rgba(240,222,180,${p.o})` : `rgba(200,132,26,${p.o})`;
+          ctx.fill();
+          if (p.type === "pollen") {
+            p.phase += p.phaseSpeed;
+            p.x += p.dx + Math.sin(p.phase) * 0.4;
+            p.y += p.dy;
+            if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+            if (p.x < -10) p.x = canvas.width + 10;
+            if (p.x > canvas.width + 10) p.x = -10;
+          } else {
+            p.angle += p.angleSpeed;
+            p.x += Math.cos(p.angle) * 0.2 + p.dx;
+            p.y += Math.sin(p.angle) * 0.15 + p.dy;
+            if (p.x < -20) p.x = canvas.width + 20;
+            if (p.x > canvas.width + 20) p.x = -20;
+            if (p.y < -20) p.y = canvas.height + 20;
+            if (p.y > canvas.height + 20) p.y = -20;
+          }
         }
       });
       animId = requestAnimationFrame(draw);
@@ -326,6 +372,40 @@ function FadeSection({ children, className = "", style = {}, delay = 0 }) {
       style={{ ...style, transitionDelay: visible ? `${delay}s` : "0s" }}
     >
       {children}
+    </div>
+  );
+}
+
+// ─── BEE ELEMENT ──────────────────────────────────────────────────────────────
+
+function BeeElement() {
+  const [active, setActive] = useState(false);
+  const [fromBottom, setFromBottom] = useState(false);
+
+  useEffect(() => {
+    const trigger = () => {
+      setFromBottom(Math.random() > 0.5);
+      setActive(true);
+      setTimeout(() => setActive(false), 7000);
+    };
+    const first = setTimeout(trigger, 10000);
+    const interval = setInterval(trigger, 22000);
+    return () => { clearTimeout(first); clearInterval(interval); };
+  }, []);
+
+  if (!active) return null;
+  return (
+    <div style={{
+      position: "fixed",
+      top: fromBottom ? "70%" : "25%",
+      left: 0,
+      zIndex: 1600,
+      fontSize: "2rem",
+      pointerEvents: "none",
+      animation: "beeFlight 7s cubic-bezier(0.4,0,0.6,1) forwards",
+      filter: "drop-shadow(0 0 6px rgba(200,132,26,0.5))",
+    }}>
+      🐝
     </div>
   );
 }
@@ -428,13 +508,14 @@ function ProcessSection() {
               <div style={{ textAlign: "center", padding: "1.5rem 1rem" }}>
                 <div style={{
                   width: 72, height: 72, borderRadius: "50%",
-                  background: "rgba(200,132,26,0.1)", border: "1px solid rgba(200,132,26,0.25)",
+                  background: "rgba(61,92,53,0.18)", border: "1px solid rgba(90,140,74,0.35)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: "1.8rem", margin: "0 auto 1rem",
-                  transition: "all 0.3s",
+                  transition: "all 0.35s cubic-bezier(0.23,1,0.32,1)",
+                  boxShadow: "0 0 0 rgba(90,140,74,0)",
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(200,132,26,0.2)"; e.currentTarget.style.borderColor = "rgba(200,132,26,0.5)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(200,132,26,0.1)"; e.currentTarget.style.borderColor = "rgba(200,132,26,0.25)"; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(61,92,53,0.35)"; e.currentTarget.style.borderColor = "rgba(90,140,74,0.7)"; e.currentTarget.style.boxShadow = "0 0 20px rgba(90,140,74,0.3)"; e.currentTarget.style.transform = "scale(1.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(61,92,53,0.18)"; e.currentTarget.style.borderColor = "rgba(90,140,74,0.35)"; e.currentTarget.style.boxShadow = "0 0 0 rgba(90,140,74,0)"; e.currentTarget.style.transform = "scale(1)"; }}
                 >
                   {step.icon}
                 </div>
@@ -743,16 +824,20 @@ export default function OroPuro() {
       --amber-dark:   #7A4E10;
       --amber-glow:   #E8A832;
       --bark:         #1A120A;
-      --bark-soft:    #221810;
-      --bark-card:    #2A1E12;
-      --bark-border:  #3D2E1A;
+      --bark-soft:    #1C1E10;
+      --bark-card:    #231E10;
+      --bark-border:  #3A3020;
       --parchment:    #F0DEB4;
       --ivory:        #F8F0E0;
-      --text-muted:   #9E8060;
+      --text-muted:   #9E9070;
       --moss:         #4A6741;
       --fern:         #6B8F5E;
       --sage:         #8FAF7E;
       --forest-dark:  #2D3F28;
+      --forest-mid:   #3D5C35;
+      --leaf-bright:  #5A8C4A;
+      --dew:          #A8C89A;
+      --earth:        #2E1E0F;
       --stock-red:    #B8432A;
     }
 
@@ -800,10 +885,13 @@ export default function OroPuro() {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       position: relative; overflow: hidden; text-align: center;
       background:
-        radial-gradient(ellipse at 50% 90%, rgba(200,132,26,0.15) 0%, transparent 55%),
-        radial-gradient(ellipse at 15% 25%, rgba(74,103,65,0.08) 0%, transparent 45%),
-        radial-gradient(ellipse at 85% 15%, rgba(232,168,50,0.06) 0%, transparent 40%),
-        linear-gradient(180deg, #0D0A06 0%, #1A120A 50%, #1A1208 100%);
+        radial-gradient(ellipse at 50% 95%, rgba(200,132,26,0.22) 0%, transparent 50%),
+        radial-gradient(ellipse at 5% 30%, rgba(45,63,40,0.50) 0%, transparent 50%),
+        radial-gradient(ellipse at 95% 20%, rgba(61,92,53,0.40) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 10%, rgba(74,103,65,0.25) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 80%, rgba(232,168,50,0.10) 0%, transparent 40%),
+        linear-gradient(160deg, #0D130A 0%, #1A120A 45%, #131A0D 100%);
+      animation: forestBreath 20s ease-in-out infinite;
     }
     .hero::after {
       content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
@@ -882,7 +970,7 @@ export default function OroPuro() {
       transition: border-color 0.4s, box-shadow 0.4s;
       will-change: transform;
     }
-    .product-card:hover { border-color: rgba(200,132,26,0.4); box-shadow: 0 24px 70px rgba(15,8,0,0.7), 0 0 60px rgba(200,132,26,0.09); }
+    .product-card:hover { border-color: rgba(200,132,26,0.45); box-shadow: 0 24px 70px rgba(10,15,8,0.75), 0 0 60px rgba(200,132,26,0.12), 0 0 30px rgba(90,140,74,0.08); }
     .product-card:hover .card-top-line { opacity: 1 !important; transition: opacity 0.4s; }
     .product-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 0.25rem; }
     .product-sub { color: var(--text-muted); font-size: 0.73rem; letter-spacing: 1px; margin-bottom: 1rem; }
@@ -907,16 +995,17 @@ export default function OroPuro() {
     .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto; }
     .benefit-card {
       text-align: center; padding: 2.2rem 1.5rem;
-      border: 1px solid rgba(200,132,26,0.12);
-      transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
-      background: rgba(200,132,26,0.02);
+      border: 1px solid rgba(90,140,74,0.18);
+      transition: all 0.45s cubic-bezier(0.23,1,0.32,1);
+      background: rgba(45,63,40,0.06);
     }
     .benefit-card:hover {
-      border-color: rgba(200,132,26,0.35);
-      transform: translateY(-6px);
-      box-shadow: 0 14px 40px rgba(0,0,0,0.4), 0 0 30px rgba(200,132,26,0.07);
-      background: rgba(200,132,26,0.05);
+      border-color: rgba(90,140,74,0.5);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 0 40px rgba(90,140,74,0.2), 0 0 20px rgba(200,132,26,0.08);
+      background: rgba(45,63,40,0.12);
     }
+    .benefit-card:hover .benefit-icon { animation: iconSpin 0.6s cubic-bezier(0.23,1,0.32,1) forwards; }
     .benefit-icon { font-size: 2.5rem; margin-bottom: 1rem; display: inline-block; animation: leafDrift 6s ease-in-out infinite; }
     .benefit-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 0.6rem; color: var(--amber); }
     .benefit-text { color: var(--text-muted); font-size: 0.83rem; line-height: 1.7; }
@@ -960,8 +1049,9 @@ export default function OroPuro() {
     .guarantee-point { font-size: 0.72rem; color: var(--amber-light); letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
 
     .footer {
-      padding: 4rem 2rem 2rem; background: var(--bark-soft);
-      border-top: 1px solid rgba(200,132,26,0.12);
+      padding: 4rem 2rem 2rem;
+      background: linear-gradient(180deg, var(--forest-dark) 0%, #1A1F10 100%);
+      border-top: 1px solid rgba(90,140,74,0.2);
     }
     .footer-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 3rem; }
     .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--amber); letter-spacing: 4px; margin-bottom: 0.8rem; }
@@ -1019,12 +1109,12 @@ export default function OroPuro() {
     .cart-total-label { letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem; color: var(--text-muted); }
     .cart-total-amount { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--amber); }
     .checkout-btn {
-      width: 100%; padding: 16px; background: var(--amber); color: var(--bark);
+      width: 100%; padding: 16px; background: linear-gradient(90deg, var(--amber) 0%, var(--forest-mid) 100%); color: var(--ivory);
       border: none; font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase;
       font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif;
       margin-top: 0.8rem; transition: all 0.3s; position: relative; overflow: hidden;
     }
-    .checkout-btn:hover { box-shadow: 0 8px 30px rgba(200,132,26,0.4); }
+    .checkout-btn:hover { box-shadow: 0 8px 30px rgba(200,132,26,0.4), 0 4px 20px rgba(90,140,74,0.2); }
     .checkout-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: sweepShine 2.5s 1s infinite; }
     .stripe-note { text-align: center; color: var(--text-muted); font-size: 0.63rem; margin-top: 0.7rem; letter-spacing: 1px; }
     .empty-cart { text-align: center; color: var(--text-muted); padding: 3rem 0; font-style: italic; }
@@ -1035,8 +1125,8 @@ export default function OroPuro() {
     .upsell-btn { background: none; border: 1px solid rgba(200,132,26,0.35); color: var(--amber); padding: 4px 12px; font-size: 0.65rem; letter-spacing: 1px; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: all 0.2s; white-space: nowrap; }
     .upsell-btn:hover { background: var(--amber); color: var(--bark); }
 
-    .fade-section { opacity: 0; transform: translateY(40px); transition: opacity 0.85s cubic-bezier(0.23, 1, 0.32, 1), transform 0.85s cubic-bezier(0.23, 1, 0.32, 1); }
-    .fade-section.visible { opacity: 1; transform: translateY(0); }
+    .fade-section { opacity: 0; transform: translateY(72px) scale(0.96); transition: opacity 1s cubic-bezier(0.16,1,0.3,1), transform 1s cubic-bezier(0.16,1,0.3,1); }
+    .fade-section.visible { opacity: 1; transform: translateY(0) scale(1); }
 
     .burger { display: none; background: none; border: none; color: var(--amber); font-size: 1.5rem; cursor: pointer; }
 
@@ -1130,6 +1220,42 @@ export default function OroPuro() {
       from { transform: rotate(0deg); }
       to   { transform: rotate(360deg); }
     }
+    @keyframes beeFlight {
+      0%   { transform: translateX(-60px)  translateY(0px); opacity: 0; }
+      5%   { opacity: 1; }
+      25%  { transform: translateX(25vw)   translateY(-60px); }
+      50%  { transform: translateX(50vw)   translateY(40px); }
+      75%  { transform: translateX(75vw)   translateY(-30px); }
+      95%  { opacity: 1; }
+      100% { transform: translateX(110vw)  translateY(20px); opacity: 0; }
+    }
+    @keyframes forestBreath {
+      0%   { filter: brightness(1) saturate(1); }
+      40%  { filter: brightness(1.04) saturate(1.08); }
+      100% { filter: brightness(1) saturate(1); }
+    }
+    @keyframes iconSpin {
+      0%   { transform: scale(1) rotate(0deg); }
+      40%  { transform: scale(1.3) rotate(15deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    @keyframes letterPop {
+      0%   { opacity: 0; transform: translateY(-30px) scale(0.4); }
+      60%  { opacity: 1; transform: translateY(6px) scale(1.15); }
+      80%  { transform: translateY(-3px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes counterBounce {
+      0%   { transform: scale(1); color: var(--amber); }
+      40%  { transform: scale(1.18); color: var(--sage); }
+      70%  { transform: scale(0.95); color: var(--amber-glow); }
+      100% { transform: scale(1); color: var(--amber); }
+    }
+    @keyframes greenGlowPulse {
+      0%   { box-shadow: 0 0 10px rgba(90,140,74,0.2), 0 4px 22px rgba(200,132,26,0.15); }
+      50%  { box-shadow: 0 0 35px rgba(90,140,74,0.45), 0 8px 42px rgba(200,132,26,0.3); }
+      100% { box-shadow: 0 0 10px rgba(90,140,74,0.2), 0 4px 22px rgba(200,132,26,0.15); }
+    }
   `;
 
   if (loading) {
@@ -1146,6 +1272,7 @@ export default function OroPuro() {
       <style>{css}</style>
 
       <SocialToast />
+      <BeeElement />
       <FloatingCTA showCart={showCart} onScroll={() => scrollTo("productos")} />
 
       {/* NAV */}
@@ -1180,11 +1307,22 @@ export default function OroPuro() {
 
       {/* HERO */}
       <section className="hero" id="hero">
-        <HoneycombBg opacity={0.05} />
+        <HoneycombBg opacity={0.06} />
         <HeroParticles />
         <div className="hero-content">
           <div className="hero-eyebrow">· Miel Artesanal de Origen ·</div>
-          <h1 className="hero-title">Oro Puro</h1>
+          <h1 className="hero-title" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0 0.15em", letterSpacing: "0.05em" }}>
+            {"ORO PURO".split("").map((ch, i) => (
+              <span key={i} style={{
+                display: "inline-block",
+                opacity: 0,
+                background: "linear-gradient(135deg, var(--amber-light) 0%, var(--amber-glow) 30%, var(--amber) 55%, var(--amber-dark) 80%, var(--amber-glow) 100%)",
+                backgroundSize: "200% 200%",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                animation: `letterPop 0.6s ${0.5 + i * 0.08}s cubic-bezier(0.16,1,0.3,1) forwards, shimmer 5s ${1.5 + i * 0.1}s ease-in-out infinite`,
+              }}>{ch === " " ? " " : ch}</span>
+            ))}
+          </h1>
           <p className="hero-subtitle">
             La miel más exclusiva, cosechada con la paciencia que la naturaleza exige.
             <br />Un lujo que la tierra creó para ti.
@@ -1193,17 +1331,36 @@ export default function OroPuro() {
             Descubrir la Colección
           </button>
         </div>
-        {[...Array(12)].map((_, i) => (
-          <div key={i} style={{
-            position: "absolute", width: 10 + (i % 3) * 3, height: 14 + (i % 3) * 4,
+
+        {/* Amber drips */}
+        {[0,1,2,3,4,5,6,7].map((i) => (
+          <div key={`a${i}`} style={{
+            position: "absolute",
+            width: 18 + (i % 3) * 6, height: 26 + (i % 3) * 8,
             borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
             background: `linear-gradient(180deg, ${i % 2 === 0 ? "#F2C96E" : "#E8A832"}, #7A4E10)`,
-            left: `${4 + i * 8.5}%`, top: -20,
-            animation: `drip ${6 + i * 0.9}s ${i * 1.4}s infinite cubic-bezier(0.2,0,0.8,1)`,
-            opacity: 0.75,
+            left: `${5 + i * 12}%`, top: -30,
+            animation: `drip ${8 + i * 1.1}s ${i * 1.6}s infinite cubic-bezier(0.2,0,0.8,1)`,
+            opacity: 0.85,
+            filter: "drop-shadow(0 0 8px rgba(200,132,26,0.55))",
             zIndex: 1,
           }} />
         ))}
+        {/* Green / forest drips */}
+        {[0,1,2,3,4].map((i) => (
+          <div key={`g${i}`} style={{
+            position: "absolute",
+            width: 14 + i * 4, height: 20 + i * 5,
+            borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
+            background: `linear-gradient(180deg, #8FAF7E, #2D3F28)`,
+            left: `${10 + i * 18}%`, top: -30,
+            animation: `drip ${10 + i * 1.3}s ${3 + i * 2}s infinite cubic-bezier(0.2,0,0.8,1)`,
+            opacity: 0.7,
+            filter: "drop-shadow(0 0 6px rgba(90,140,74,0.45))",
+            zIndex: 1,
+          }} />
+        ))}
+
         <div className="hero-scroll-cue">
           <span>Scroll</span>
           <div className="scroll-arrow" />
@@ -1262,7 +1419,7 @@ export default function OroPuro() {
 
       {/* PROCESS */}
       <div id="proceso">
-        <WaveDivider color="var(--bark-soft)" />
+        <WaveDivider color="#1C1E10" />
         <ProcessSection />
         <WaveDivider flip color="var(--bark)" />
       </div>
