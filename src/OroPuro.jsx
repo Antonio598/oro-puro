@@ -82,7 +82,7 @@ const BUNDLES = [
 
 const TESTIMONIALS = [
   { name: "María G.", text: "Jamás probé una miel así. Es como líquido dorado del paraíso.", rating: 5, location: "Madrid" },
-  { name: "Carlos R.", text: "Mi familia ya no acepta otra miel. Oro Puro cambió nuestro estándar para siempre.", rating: 5, location: "Barcelona" },
+  { name: "Carlos R.", text: "Mi familia ya no acepta otra miel. Doreé cambió nuestro estándar para siempre.", rating: 5, location: "Barcelona" },
   { name: "Ana L.", text: "El packaging es impecable y el sabor... indescriptible. Regalo perfecto.", rating: 5, location: "Ciudad de México" },
   { name: "Pedro M.", text: "La Reserva del Bosque tiene un perfil aromático increíble. Soy sommelier y esto es arte.", rating: 5, location: "Sevilla" },
   { name: "Laura V.", text: "Llevo 6 meses pidiendo cada mes. El mejor producto que he comprado online.", rating: 5, location: "Valencia" },
@@ -103,7 +103,7 @@ const SOCIAL_PROOF = [
 const FAQS = [
   {
     q: "¿Es realmente pura, sin mezclas ni aditivos?",
-    a: "100%. Oro Puro nunca mezcla mieles de distintos orígenes ni añade azúcares, aromas artificiales ni conservantes. Cada bote contiene exactamente lo que la naturaleza produjo, sin más.",
+    a: "100%. Doreé nunca mezcla mieles de distintos orígenes ni añade azúcares, aromas artificiales ni conservantes. Cada bote contiene exactamente lo que la naturaleza produjo, sin más.",
   },
   {
     q: "¿Cómo debo conservar la miel para que dure?",
@@ -1312,7 +1312,7 @@ export default function OroPuro() {
         <div className="hero-content">
           <div className="hero-eyebrow">· Miel Artesanal de Origen ·</div>
           <h1 className="hero-title" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0 0.15em", letterSpacing: "0.05em" }}>
-            {"ORO PURO".split("").map((ch, i) => (
+            {"DOREÉ".split("").map((ch, i) => (
               <span key={i} style={{
                 display: "inline-block",
                 opacity: 0,
@@ -1428,7 +1428,7 @@ export default function OroPuro() {
       <section className="section section-dark" id="beneficios" style={{ position: "relative" }}>
         <HoneycombBg opacity={0.04} />
         <FadeSection>
-          <h2 className="section-title">¿Por qué <em>Oro Puro</em>?</h2>
+          <h2 className="section-title">¿Por qué <em>Doreé</em>?</h2>
           <p className="section-subtitle">Lo que nos hace diferentes no es lo que hacemos, es lo que nunca haríamos</p>
         </FadeSection>
         <FadeSection>
@@ -1458,7 +1458,7 @@ export default function OroPuro() {
       <section className="section" id="testimonios" style={{ background: "var(--bark)" }}>
         <FadeSection>
           <h2 className="section-title">Lo que dicen de <em>nosotros</em></h2>
-          <p className="section-subtitle">Miles de hogares ya eligieron Oro Puro</p>
+          <p className="section-subtitle">Miles de hogares ya eligieron Doreé</p>
         </FadeSection>
         <FadeSection>
           <div className="testimonials-grid">
@@ -1489,7 +1489,7 @@ export default function OroPuro() {
               </svg>
               <div style={{ fontSize: "3rem" }}>🛡️</div>
             </div>
-            <h3>Garantía <span style={{ color: "var(--amber)" }}>Oro Puro</span></h3>
+            <h3>Garantía <span style={{ color: "var(--amber)" }}>Doreé</span></h3>
             <p style={{ marginBottom: "0.5rem", marginTop: "1rem" }}>
               Si no es la mejor miel que has probado en tu vida, te devolvemos el 100% de tu dinero.
               Sin preguntas. Sin complicaciones. Tienes 30 días para decidir.
@@ -1512,7 +1512,7 @@ export default function OroPuro() {
           <div style={{ fontSize: "3.5rem", marginBottom: "1.5rem" }}>🍯</div>
           <h2 className="section-title" style={{ marginBottom: "1rem" }}>Tu momento <em>dorado</em> es ahora</h2>
           <p style={{ color: "var(--text-muted)", maxWidth: 520, margin: "0 auto 2.5rem", lineHeight: 1.85, fontSize: "1.05rem", fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
-            Cada frasco de Oro Puro es una promesa de pureza, tradición y excelencia que la naturaleza tardó estaciones enteras en crear.
+            Cada frasco de Doreé es una promesa de pureza, tradición y excelencia que la naturaleza tardó estaciones enteras en crear.
           </p>
           <button className="hero-cta" onClick={() => scrollTo("productos")} style={{ opacity: 1, animation: "organicGlow 3.5s ease-in-out infinite" }}>
             Comprar Ahora
@@ -1524,7 +1524,7 @@ export default function OroPuro() {
       <footer className="footer">
         <div className="footer-inner">
           <div>
-            <div className="footer-logo">ORO PURO</div>
+            <div className="footer-logo">DOREÉ</div>
             <p className="footer-tagline">Miel artesanal de origen.<br />Hecha con amor por la naturaleza.</p>
             <div className="social-links">
               <span className="social-link" title="Instagram">📷</span>
@@ -1572,7 +1572,7 @@ export default function OroPuro() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 Oro Puro. Todos los derechos reservados.</p>
+          <p>© 2026 Doreé. Todos los derechos reservados.</p>
         </div>
       </footer>
 
