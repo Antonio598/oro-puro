@@ -241,7 +241,7 @@ function HoneyJarSVG({ color = "#C8841A", size = 120, animated = false }) {
 
 function LoadingScreen({ onDone }) {
   useEffect(() => {
-    const t = setTimeout(onDone, 1900);
+    const t = setTimeout(onDone, 1100);
     return () => clearTimeout(t);
   }, [onDone]);
 
@@ -249,7 +249,7 @@ function LoadingScreen({ onDone }) {
     <div style={{
       position: "fixed", inset: 0, background: "#1A120A", zIndex: 9999,
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      animation: "loadingFadeOut 0.5s 1.6s forwards",
+      animation: "loadingFadeOut 0.4s 0.9s forwards",
     }}>
       <div style={{ animation: "loadingPulse 1.6s ease-in-out infinite" }}>
         <HoneyJarSVG size={90} color="#C8841A" animated={false} />
@@ -259,12 +259,12 @@ function LoadingScreen({ onDone }) {
         letterSpacing: 6, color: "#C8841A", marginTop: "1.5rem",
         animation: "fadeUp 0.8s 0.3s both",
       }}>
-        ORO <span style={{ color: "#F8F0E0", fontWeight: 400 }}>PURO</span>
+        DOR<span style={{ color: "#F8F0E0", fontWeight: 400 }}>EÉ</span>
       </div>
       <div style={{
         width: 120, height: 2, background: "rgba(200,132,26,0.2)", borderRadius: 2, marginTop: "1.2rem", overflow: "hidden",
       }}>
-        <div style={{ height: "100%", background: "var(--amber)", animation: "loadingBar 1.5s ease-out forwards", width: 0 }} />
+        <div style={{ height: "100%", background: "var(--amber)", animation: "loadingBar 0.9s ease-out forwards", width: 0 }} />
       </div>
     </div>
   );
@@ -1335,18 +1335,10 @@ export default function OroPuro() {
     }
   `;
 
-  if (loading) {
-    return (
-      <>
-        <style>{css}</style>
-        <LoadingScreen onDone={() => setLoading(false)} />
-      </>
-    );
-  }
-
   return (
     <>
       <style>{css}</style>
+      {loading ? <LoadingScreen onDone={() => setLoading(false)} /> : <>
 
       <SocialToast />
       <BeeElement />
@@ -1732,6 +1724,7 @@ export default function OroPuro() {
           </>
         )}
       </div>
+      </>}
     </>
   );
 }
